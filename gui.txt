@@ -1,0 +1,72 @@
+clc;
+close all;
+
+import ECE655_Lab4_Given.*;
+
+Lanch_GUI()
+
+function names = get_curves()
+    names = 'straight_5|zigzag_10';
+end
+
+function set = access_curves(num)
+straight_5 = [ 1 1; 2 2; 3 3; 4 4; 5 5 ];
+zigzag_10 = [ 1 1; 2 2; 3 3; 4 2; 5 1; 6 2; 7 3; 8 2; 9 1 ];
+
+    switch num
+        case 1
+            set = straight_5;
+        case 2
+            set = zigzag_10;
+    end
+end
+ 
+function Lanch_GUI()
+    hFig = figure('Menubar','none');
+    s = warning('off', 'MATLAB:uitabgroup:OldVersion');
+    
+    % Initialize all of the plots as empty
+    subplot(2,3,1); set1_plot = plot(NaN, NaN); title('Set 1');
+    subplot(2,3,2); set2_plot = plot(NaN, NaN); title('Set 2');
+    subplot(2,3,3); reg_plot =  plot(NaN, NaN); title('Registered Sets');
+    subplot(2,3,6); err_plot =  plot(NaN, NaN); title('Error');
+    
+    % Initialize all of the push buttons
+    pb_set1 = uicontrol('Parent',hFig,'Position',[25 50 100 30] ,'Style','pushbutton', 'String','Update Graph #1','Callback',@set1_update);
+    pb_set2 = uicontrol('Parent',hFig,'Position',[150 50 100 30],'Style','pushbutton', 'String','Update Graph #2','Callback',@set2_update);
+    pb_icp  = uicontrol('Parent',hFig,'Position',[260 50 100 30],'Style','pushbutton', 'String','Register Images','Callback',@register);
+    
+    % Initialize all of the dropdown menus
+    dd_set1 = uicontrol('Parent',hFig,'Position',[25 100 75 30] ,'Style','popupmenu', 'String',get_curves(), 'Callback',@dd_callback);
+    dd_set2 = uicontrol('Parent',hFig,'Position',[150 100 75 30],'Style','popupmenu', 'String',get_curves(), 'Callback',@dd_callback);
+    
+    % Beautify the GUI
+    align([pb_set1, pb_set2, pb_icp],'distribute','bottom');
+    align([dd_set1, pb_set1],'center','fixed',10);
+    align([dd_set2, pb_set2],'center','fixed', 10);
+    
+    % GUI button callback functions
+    function set1_update(src,evt)
+        dd1_value = get(dd_set1,'Value');
+        curve = access_curves(dd1_value);
+        
+        if size(curve,2) == 2
+            set(set1_plot,'XData',curve(:,1),'YData',curve(:,2));
+        end
+    end
+    
+    function set2_update(src,evt)
+        dd2_value = get(dd_set2,'Value');
+        curve = access_curves(dd2_value);
+
+        if size(curve,2) == 2
+            set(set2_plot,'XData',curve(:,1),'YData',curve(:,2));
+        end
+    end
+
+    % GUI dropdown menu callback functions
+    function dd_callback(src,evt) 
+        % Do nothing
+    end
+end
+
